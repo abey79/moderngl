@@ -65,11 +65,17 @@ class RichLines(Example):
 
         self.line_prog = self.load_program("rich_lines.glsl")
 
+        # lines = [
+        #     star(n=5) * 300 + (400, 400),
+        #     star(n=8) * 150 + (900, 200),
+        #     rect(900, 600, 150, 50),
+        #     [(1200, 100), (1400, 200), (1300, 100)],
+        # ]
+
+        unit_line = np.array([(0, 0), (0.5, 0), (1, 0)])
         lines = [
-            star(n=5) * 300 + (400, 400),
-            star(n=8) * 150 + (900, 200),
-            rect(900, 600, 150, 50),
-            [(1200, 100), (1400, 200), (1300, 100)],
+            np.array([50, 50 + 3 * i]) + sz * unit_line
+            for i, sz in enumerate(np.logspace(2, -1, 100))
         ]
 
         vertex, index = build_buffers(lines)
@@ -85,12 +91,12 @@ class RichLines(Example):
         # - antialias value is in model space and should probably be scaled to be ~1.5px in
         #   screen space
 
-        self.line_prog["linewidth"].value = 15
+        self.line_prog["linewidth"].value = 0.4
         self.line_prog["antialias"].value = 1.5
         self.line_prog["miter_limit"].value = -1
         self.line_prog["color"].value = 0, 0, 1, 1
         self.line_prog["projection"].write(
-            Matrix44.orthogonal_projection(0, 1600, 800, 0, 0.5, -0.5, dtype="f4")
+            Matrix44.orthogonal_projection(0, 400, 400, 0, 0.5, -0.5, dtype="f4")
         )
 
     def render(self, time, frame_time):
